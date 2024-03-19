@@ -82,25 +82,26 @@ function updateCryptosData() {
   // Fetch cryptocurrency data
   const datas = fetchCryptoData(symbols);
 
-	// Update spreadsheet cells with fetched data
-	Object.keys(symbol_positions).forEach(function(symbol) {
-	  var position_list = symbol_positions[symbol];
-	  position_list.forEach(function(position) {
-		const [row, col] = position;
-		const index = symbols.indexOf(symbol);
-		const cell = range.getCell(row + 1, col + 1);
-		let result;
-		try {
-		  result = categories[index].split('.').reduce(function(obj, prop) {
-			return obj[prop];
-		  }, datas[index]);
-		} catch (error) {
-		  console.error('Error accessing property: ' + categories[index]);
-		}
-		const value = typeof result === 'string' ? '"' + result + '"' : result;
-		cell.setFormula(`=getCryptoDataBySymbol("${symbol}", "${categories[index]}", ${value})`);
-	  });
-	});
+  // Update spreadsheet cells with fetched data
+  Object.keys(symbol_positions).forEach(function(symbol) {
+    var position_list = symbol_positions[symbol];
+    for (let i = 0; i < position_list.length; i++) {
+      const row = position_list[i][0];
+      const col = position_list[i][1];
+      const index = symbols.indexOf(symbol);
+      var cell = range.getCell(row + 1, col + 1);
+      var result;
+      try {
+        result = categories[i].split('.').reduce(function(obj, prop) {
+          return obj[prop];
+        }, datas[index]);
+      } catch (error) {
+        console.log('Error accessing property: ' + categories[i]);
+      }
+      const value = typeof result === 'string' ? '"' + result + '"' : result;
+      cell.setFormula(`=getCryptoDataBySymbol("${symbol}", "${categories[i]}", ${value})`);
+    }
+  });
 }
 
 // Function to get cryptocurrency data by symbol and category
